@@ -1,4 +1,4 @@
-/*{{import app from '../src/app';
+import app from '../src/app';
 import {
   adminDeleteUser,
   deleteUser,
@@ -302,5 +302,3 @@ describe('Testing graphql api', () => {
   //   }
   // }, 15000);
 });
-}}
-*/
