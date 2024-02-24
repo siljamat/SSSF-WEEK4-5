@@ -32,12 +32,9 @@ export default {
               },
             });
           },
-        catsByOwner: async (_parent: undefined, args: {owner: string}, context: MyContext) => {
-            if (context.userdata?.user.id === args.owner) {
-              return await catModel.find({owner: args.owner});
-            }
-            throw new GraphQLError('You are not the owner of the cats');
-            },
+          catsByOwner: async (_parent: undefined, args: {ownerId: string}) => {
+            return await catModel.find({owner: args.ownerId});
+          },
     },
     Mutation: {
         createCat: async (
@@ -49,20 +46,31 @@ export default {
             args.input.owner = context.userdata?.user.id;
             return await catModel.create(args.input);
             },
-        //role 'admin' or 'user' are determined by the token
         updateCat: async (
             _parent: undefined,
             args: {id: string; input: Partial<Omit<Cat, 'id'>>},
             context: MyContext,
-          ) => {
+            ) => {
             isLoggedIn(context);
-            return await catModel.findByIdAndUpdate(args.id, args.input, {new: true});
-            },
-    //role 'admin' or 'user' are determined by the token
-    deleteCat: async (_parent: undefined, args: {id: string}, context: MyContext) => {
-        isLoggedIn(context);
-        const filter = {_id: args.id, owner: context.userdata?.user.id};
-        return await catModel.findOneAndDelete(filter);
+            if (context.userdata?.user.role !== 'admin') {
+                const filter = {_id: args.id, owner: context.userdata?.user.id};
+                return await catModel.findOneAndUpdate(filter, args.input, {new: true});
+            } else {
+                return await catModel.findByIdAndUpdate(args.id, args.input, {new: true});
+            }
+        },
+        deleteCat: async (
+            _parent: undefined,
+            args: {id: string},
+            context: MyContext,
+            ) => {
+            isLoggedIn(context);
+            if (context.userdata?.user.role !== 'admin') {
+                const filter = {_id: args.id, owner: context.userdata?.user.id};
+                return await catModel.findOneAndDelete(filter);
+            } else {
+                return await catModel.findByIdAndDelete(args.id);
+            }
         }
-    },
-};
+    }
+}
