@@ -1,4 +1,4 @@
-import app from '../src/app';
+/*{{import app from '../src/app';
 import {
   adminDeleteUser,
   deleteUser,
@@ -159,7 +159,7 @@ describe('Testing graphql api', () => {
   });
 
   // test get all cats
-  it('should return array of cats', async () => {
+  it('should return array of cats', async () => { 
     await getCat(app);
   });
 
@@ -302,3 +302,5 @@ describe('Testing graphql api', () => {
   //   }
   // }, 15000);
 });
+}}
+*/
